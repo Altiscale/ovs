@@ -479,11 +479,11 @@ static int lisp_send(struct vport *vport, struct sk_buff *skb)
 	if (err)
 		goto err_free_rt;
 
-	skb->local_df = 1;
+	skb->ignore_df = 1;
 
 	df = OVS_CB(skb)->tun_key->tun_flags &
 				  TUNNEL_DONT_FRAGMENT ?  htons(IP_DF) : 0;
-	sent_len = iptunnel_xmit(rt, skb,
+	sent_len = iptunnel_xmit(skb->sk, rt, skb,
 			     saddr, OVS_CB(skb)->tun_key->ipv4_dst,
 			     IPPROTO_UDP, OVS_CB(skb)->tun_key->ipv4_tos,
 			     OVS_CB(skb)->tun_key->ipv4_ttl, df, false);
