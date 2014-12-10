@@ -8,8 +8,29 @@ struct net;
 
 #include <linux/version.h>
 
+#ifndef IFF_TX_SKB_SHARING
+#define IFF_TX_SKB_SHARING 0
+#endif
+
+#ifndef IFF_OVS_DATAPATH
+#define IFF_OVS_DATAPATH 0
+#else
+#define HAVE_OVS_DATAPATH
+#endif
+
+#ifndef IFF_LIVE_ADDR_CHANGE
+#define IFF_LIVE_ADDR_CHANGE 0
+#endif
+
 #ifndef to_net_dev
 #define to_net_dev(class) container_of(class, struct net_device, NETDEV_DEV_MEMBER)
+#endif
+
+#ifndef HAVE_NET_NAME_UNKNOWN
+#undef alloc_netdev
+#define NET_NAME_UNKNOWN 0
+#define alloc_netdev(sizeof_priv, name, name_assign_type, setup) \
+        alloc_netdev_mqs(sizeof_priv, name, setup, 1, 1)
 #endif
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,33)
@@ -64,11 +85,13 @@ static inline struct net_device *dev_get_by_index_rcu(struct net *net, int ifind
 typedef u32 netdev_features_t;
 #endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,38)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,16,0)
 #define skb_gso_segment rpl_skb_gso_segment
 struct sk_buff *rpl_skb_gso_segment(struct sk_buff *skb,
                                     netdev_features_t features);
+#endif
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,38)
 #define netif_skb_features rpl_netif_skb_features
 netdev_features_t rpl_netif_skb_features(struct sk_buff *skb);
 
@@ -113,7 +136,7 @@ static inline struct net_device *netdev_master_upper_dev_get(struct net_device *
 }
 #endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,37)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,16,0)
 #define dev_queue_xmit rpl_dev_queue_xmit
 int dev_queue_xmit(struct sk_buff *skb);
 #endif
@@ -136,6 +159,22 @@ struct pcpu_sw_netstats {
 	u64     tx_bytes;
 	struct u64_stats_sync   syncp;
 };
+#endif
+
+#ifndef netdev_alloc_pcpu_stats
+#define netdev_alloc_pcpu_stats(type)				\
+({								\
+	typeof(type) __percpu *pcpu_stats = alloc_percpu(type); \
+	if (pcpu_stats) {					\
+		int ____i;					\
+		for_each_possible_cpu(____i) {			\
+			typeof(type) *stat;			\
+			stat = per_cpu_ptr(pcpu_stats, ____i);	\
+			u64_stats_init(&stat->syncp);		\
+		}						\
+	}							\
+	pcpu_stats;						\
+})
 #endif
 
 #endif

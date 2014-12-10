@@ -13,7 +13,8 @@
 
 #ifdef USE_KERNEL_TUNNEL_API
 #include_next <net/ip_tunnels.h>
-static inline int rpl_iptunnel_xmit(struct rtable *rt,
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,15,0)
+static inline int rpl_iptunnel_xmit(struct sock *sk, struct rtable *rt,
                                     struct sk_buff *skb, __be32 src,
                                     __be32 dst, __u8 proto, __u8 tos,
                                     __u8 ttl, __be16 df, bool xnet)
@@ -25,6 +26,7 @@ static inline int rpl_iptunnel_xmit(struct rtable *rt,
 #endif
 }
 #define iptunnel_xmit rpl_iptunnel_xmit
+#endif
 
 #else
 
@@ -58,7 +60,7 @@ struct tnl_ptk_info {
 #define PACKET_RCVD	0
 #define PACKET_REJECT	1
 
-int iptunnel_xmit(struct rtable *rt,
+int iptunnel_xmit(struct sock *sk, struct rtable *rt,
 		  struct sk_buff *skb,
 		  __be32 src, __be32 dst, __u8 proto,
 		  __u8 tos, __u8 ttl, __be16 df, bool xnet);
