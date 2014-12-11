@@ -136,7 +136,7 @@ static inline struct net_device *netdev_master_upper_dev_get(struct net_device *
 }
 #endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3,16,0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,37)
 #define dev_queue_xmit rpl_dev_queue_xmit
 int dev_queue_xmit(struct sk_buff *skb);
 #endif
