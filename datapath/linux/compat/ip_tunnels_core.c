@@ -37,7 +37,7 @@
 #include "gso.h"
 
 #ifndef USE_KERNEL_TUNNEL_API
-int iptunnel_xmit(struct rtable *rt,
+int iptunnel_xmit(struct sock *sk, struct rtable *rt,
 		  struct sk_buff *skb,
 		  __be32 src, __be32 dst, __u8 proto,
 		  __u8 tos, __u8 ttl, __be16 df, bool xnet)

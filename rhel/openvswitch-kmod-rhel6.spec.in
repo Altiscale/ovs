@@ -12,7 +12,7 @@
 
 Name:           %{oname}-kmod
 Version:        @VERSION@
-Release:        1%{?dist}
+Release:        @RELEASE@
 Summary:        Open vSwitch kernel module
 
 Group:          System/Kernel
