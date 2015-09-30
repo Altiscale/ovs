@@ -29,7 +29,7 @@ EXTRA_DIST += \
 	rhel/usr_lib_systemd_system_openvswitch-nonetwork.service
 
 update_rhel_spec = \
-  $(AM_V_GEN)($(ro_shell) && sed -e 's,[@]VERSION[@],$(VERSION),g') \
+  $(AM_V_GEN)($(ro_shell) && sed -e 's,[@]VERSION[@],$(VERSION),g' -e 's,[@]RELEASE[@],$(RELEASE),g') \
     < $(srcdir)/rhel/$(@F).in > $(@F).tmp || exit 1; \
   if cmp -s $(@F).tmp $@; then touch $@; rm $(@F).tmp; else mv $(@F).tmp $@; fi
 

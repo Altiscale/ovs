@@ -12,7 +12,7 @@
 
 Name:           %{oname}-kmod
 Version:        @VERSION@
-Release:        1%{?dist}
+Release:        @RELEASE@
 Summary:        Open vSwitch kernel module
 
 Group:          System/Kernel
@@ -22,7 +22,7 @@ Source0:        %{oname}-%{version}.tar.gz
 Source1:        %{oname}-kmod.files
 BuildRoot:      %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 BuildRequires:  %kernel_module_package_buildreqs
-
+Requires: linux = 4.1.6
 # Without this we get an empty openvswitch-debuginfo package (whose name
 # conflicts with the openvswitch-debuginfo package for OVS userspace).
 %undefine _enable_debug_packages
